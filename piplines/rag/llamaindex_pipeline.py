@@ -9,7 +9,6 @@ requirements: llama-index
 """
 
 from typing import List, Union, Generator, Iterator
-from schemas import OpenAIChatMessage
 
 
 class Pipeline:
@@ -18,11 +17,6 @@ class Pipeline:
         self.index = None
 
     async def on_startup(self):
-        import os
-
-        # Set the OpenAI API key
-        os.environ["OPENAI_API_KEY"] = "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"
-
         from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
         self.documents = SimpleDirectoryReader("/app/docs").load_data()
