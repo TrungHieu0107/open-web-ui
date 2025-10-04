@@ -9,19 +9,20 @@ requirements: llama-index
 """
 
 from typing import List, Union, Generator, Iterator
-from pydantic import BaseModel
+from schemas import OpenAIChatMessage
 
 
-class Pipeline():
-    class Valves(BaseModel):
-        # Add your custom parameters here
-        openai_api_key: str = ""
-
+class Pipeline:
     def __init__(self):
         self.documents = None
         self.index = None
 
     async def on_startup(self):
+        import os
+
+        # Set the OpenAI API key
+        os.environ["OPENAI_API_KEY"] = "your-api-key-here"
+
         from llama_index.core import VectorStoreIndex, SimpleDirectoryReader
 
         self.documents = SimpleDirectoryReader("/app/docs").load_data()
@@ -42,4 +43,7 @@ class Pipeline():
         print(messages)
         print(user_message)
 
-        return user_message
+        query_engine = self.index.as_query_engine(streaming=True)
+        response = query_engine.query(user_message)
+
+        return response.response_gen
